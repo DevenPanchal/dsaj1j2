@@ -102,16 +102,19 @@ public class BTree {
 			// and first n children
 			for (; i < root.n; i++) {
 				if (data <= root.keys[i]) {
+					// if data is less than the key, go to that numbered corresponding child, and
+					// recurse on insert
 					SplitResult sr = insert(root.child[i], data);
-					if (sr == null) {
-						return null;
-					} else {
+					if (sr == null) { // SplitResult can be null here, when it hits a childless node on the next
+										// iteration above which is not full. See the first 'if condition.'
+						return null; // return null in that case
+					} else { // if we get back a SplitResult, then make insertKey call
 						if (!root.isFull()) {
 							// if not full, insert data and return null
 							root.insertKey(sr.c, sr.r1, sr.r2);
 							return null;
 						} else {
-							// else splitting the node is needed.
+							// else splitting the node is needed again.
 							SplitResult sr1 = splitNode(root, sr.c, sr.r1, sr.r2);
 							return sr1;
 						}
@@ -121,23 +124,28 @@ public class BTree {
 			// Subtree rooted with last child i.e (n+1)th child
 			if (i == root.n) {
 				SplitResult sr = insert(root.child[i], data);
-				if (sr == null) {
-					return null;
+				if (sr == null) { // SplitResult can be null here, when it hits a childless node on the next
+					// iteration above which is not full. See the first 'if condition.'
+					return null; // return null in that case
 
-				} else {
+				} else { // if we get back a SplitResult, then make insertKey call
 					if (!root.isFull()) {
+						// if not full, insert data and return null
 						root.insertKey(sr.c, sr.r1, sr.r2);
 						return null;
 					} else {
+						// else splitting the node is needed again.
 						SplitResult sr1 = splitNode(root, sr.c, sr.r1, sr.r2);
 						return sr1;
 					}
 				}
 			}
 		}
-		return null;
+		return null; // return null in other cases
 	}
 
+	// returns SplitResult which contains centerNode which will be promoted i.e c,
+	// and 2 children that come out of splitting i.e r1,r2
 	private SplitResult splitNode(BTreeNode node, int data, BTreeNode nr1, BTreeNode nr2) {
 		int c = node.keys[node.n / 2];
 		BTreeNode r1 = BTreeNode.newNode();
@@ -193,6 +201,7 @@ public class BTree {
 		// 3) Every node except root must contain at least t-1 keys. Root may contain
 		// minimum 1 key.
 
+		// Finally the function that actually inserts data
 		public void insertKey(int data, BTreeNode r1, BTreeNode r2) {
 			int i = n - 1;
 			while (i >= 0 && data < keys[i]) {
