@@ -78,6 +78,47 @@ public class BinarySearchTree<T extends Comparable<T>> implements Tree<T> {
 		}
 	}
 
+	public Integer getHeight() {
+		if (root == null) {
+			return -1;
+		}
+
+		else {
+			int heightOfTree = getHeight(root);
+			return heightOfTree;
+		}
+	}
+
+	public Integer getHeight(Node node) {
+
+		// node has 2 children
+		if (node.getLeftChild() != null && node.getRightChild() != null) {
+			node.setLargestLengthPathinSubtreeRootedAtThisNode(
+
+					Math.max(getHeight(node.getLeftChild()), getHeight(node.getRightChild())) + 1);
+
+		}
+		// node has 1 child
+
+		if (node.getLeftChild() != null && node.getRightChild() == null) {
+			node.setLargestLengthPathinSubtreeRootedAtThisNode(getHeight(node.getLeftChild()) + 1);
+
+		} else if (node.getLeftChild() == null && node.getRightChild() != null) {
+			node.setLargestLengthPathinSubtreeRootedAtThisNode(getHeight(node.getRightChild()) + 1);
+
+		}
+
+		// node has no children i.e Leaf node
+		if (node.getLeftChild() == null && node.getRightChild() == null) {
+
+			node.setLargestLengthPathinSubtreeRootedAtThisNode(1); // we have decided to return 1 as the LLPS of leaf
+																	// nodes.
+		}
+
+		return node.getLargestLengthPathinSubtreeRootedAtThisNode();
+
+	}
+
 	@Override
 	public void traversal(String type) {
 		if (root != null) {
@@ -248,21 +289,25 @@ public class BinarySearchTree<T extends Comparable<T>> implements Tree<T> {
 			// what data it has.node's or tempNode's.
 			// The important step was that we could copy the predecessor's data into the
 			// node. That is important for the structure of the tree.
-			
-			/*  i.e we should I have ideally done this-
-			 * Node<T>tempNode2.setData(node.getData());
-			 * Node<T> tempNode = getPredecessor(node.getLeftChild());
-			 * node.setData(tempNode.getData());   //node gets predecessor's data
-			 * tempNode.setData(tempNode2.getData());  // predecessor gets node's data
-			 * node.setLeftChild(delete(node.getLeftChild(), tempNode.getData()));
+
+			/*
+			 * i.e we should I have ideally done this-
+			 * Node<T>tempNode2.setData(node.getData()); Node<T> tempNode =
+			 * getPredecessor(node.getLeftChild()); node.setData(tempNode.getData()); //node
+			 * gets predecessor's data tempNode.setData(tempNode2.getData()); // predecessor
+			 * gets node's data node.setLeftChild(delete(node.getLeftChild(),
+			 * tempNode.getData()));
 			 * 
-			 * */
+			 */
 
 			node.setLeftChild(delete(node.getLeftChild(), tempNode.getData()));
 
 		}
 
-		return node; //returns new root when recursion folds back (if it has changed), it will not be used. Other returns from inside are useful. //here, in this case we return the current node in the loop. //return type was needed for the recursive calls. hence the return requirement.
+		return node; // returns new root when recursion folds back (if it has changed), it will not
+						// be used. Other returns from inside are useful. //here, in this case we return
+						// the current node in the loop. //return type was needed for the recursive
+						// calls. hence the return requirement.
 	}
 
 	// searches rightmost node i.e largest node.
@@ -278,7 +323,7 @@ public class BinarySearchTree<T extends Comparable<T>> implements Tree<T> {
 	@Override
 	public void delete(T data) {
 
-		if (root != null) 
+		if (root != null)
 			root = delete(root, data);
 	}
 

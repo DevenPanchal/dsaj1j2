@@ -46,12 +46,11 @@ public class App {
 		bst.traversal("pre");
 		System.out.println();
 
-		
 		bst.insert(new Person("Sam", 38));
 		bst.insert(new Person("Pete", 45));
 		bst.insert(new Person("John", 76));
 		bst.insert(new Person("Sanjay", 29));
-		
+
 		System.out.println("The In order traversal which retrieves data in sorted order is ");
 		bst.traversal("in");
 		System.out.println();
@@ -59,10 +58,10 @@ public class App {
 		System.out.println("The Pre order traversal which gives the topologically sorted tree is ");
 		bst.traversal("pre");
 		System.out.println();
-	
+
 		Person data2 = new Person("someone", 67);
 		bst.delete(data2);
-		
+
 		System.out.println("The In order traversal which retrieves data in sorted order is ");
 		bst.traversal("in");
 		System.out.println();
@@ -70,7 +69,101 @@ public class App {
 		System.out.println("The Pre order traversal which gives the topologically sorted tree is ");
 		bst.traversal("pre");
 		System.out.println();
-		
+
+		System.out.println("*******************************TREE 2**********************************");
+
+		BinarySearchTree<Integer> bst2 = new BinarySearchTree<>();
+
+		bst2.insert(5);
+		bst2.insert(2);
+		bst2.insert(19);
+		bst2.insert(34);
+		bst2.insert(67);
+		bst2.insert(99);
+		bst2.insert(12);
+		bst2.insert(13);
+		bst2.insert(199);
+		bst2.insert(1);
+		bst2.insert(10);
+
+		System.out.println("The LLPS of root is " + bst2.getHeight());
+
+		System.out.println();
+		System.out.println("The Max is " + bst2.getMaxValue());
+		System.out.println();
+		System.out.println("The Min is " + bst2.getMinValue());
+		System.out.println();
+
+		System.out.println("The Pre order traversal which gives the topologically sorted tree is ");
+		bst2.traversal("pre");
+		System.out.println();
+
+		System.out.println("The In order traversal which retrieves data in sorted order is ");
+		bst2.traversal("in");
+		System.out.println();
+
+		System.out.println("The Out of order traversal which retrieves data in reverse sorted order is ");
+		bst2.traversal("out");
+		System.out.println();
+
+		System.out.println("The Post order traversal is ");
+		bst2.traversal("post");
+		System.out.println();
+
+		bst2.delete(99);
+
+		System.out.println("The Pre order traversal which gives the topologically sorted tree is ");
+		bst2.traversal("pre");
+		System.out.println();
+
+		System.out.println("The In order traversal which retrieves data in sorted order is ");
+		bst2.traversal("in");
+		System.out.println();
+
+		System.out.println("The Out of order traversal which retrieves data in reverse sorted order is ");
+		bst2.traversal("out");
+		System.out.println();
+
+		System.out.println("The Post order traversal is ");
+		bst2.traversal("post");
+		System.out.println();
+
+		bst2.delete(10);
+
+		System.out.println("The Pre order traversal which gives the topologically sorted tree is ");
+		bst2.traversal("pre");
+		System.out.println();
+
+		System.out.println("The In order traversal which retrieves data in sorted order is ");
+		bst2.traversal("in");
+		System.out.println();
+
+		System.out.println("The Out of order traversal which retrieves data in reverse sorted order is ");
+		bst2.traversal("out");
+		System.out.println();
+
+		System.out.println("The Post order traversal is ");
+		bst2.traversal("post");
+		System.out.println();
+
+		bst2.delete(19);
+
+		System.out.println("The Pre order traversal which gives the topologically sorted tree is ");
+		bst2.traversal("pre");
+		System.out.println();
+
+		System.out.println("The In order traversal which retrieves data in sorted order is ");
+		bst2.traversal("in");
+		System.out.println();
+
+		System.out.println("The Out of order traversal which retrieves data in reverse sorted order is ");
+		bst2.traversal("out");
+		System.out.println();
+
+		System.out.println("The Post order traversal is ");
+		bst2.traversal("post");
+		System.out.println();
+
 		// @formatting:off
 
 		/*

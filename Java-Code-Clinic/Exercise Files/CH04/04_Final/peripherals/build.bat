@@ -1,0 +1,1 @@
+ javac -cp jfugue-4.0.3.jar MouseMusic.java MouseChecker.java Main.java

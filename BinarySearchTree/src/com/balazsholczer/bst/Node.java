@@ -5,6 +5,7 @@ public class Node<T> {
 	private T data;
 	private Node<T> leftChild;
 	private Node<T> rightChild;
+	int largestLengthPathinSubtreeRootedAtThisNode;
 
 	public Node(T data) {
 		this.data = data;
@@ -32,6 +33,14 @@ public class Node<T> {
 
 	public void setRightChild(Node<T> rightChild) {
 		this.rightChild = rightChild;
+	}
+
+	public int getLargestLengthPathinSubtreeRootedAtThisNode() {
+		return largestLengthPathinSubtreeRootedAtThisNode;
+	}
+
+	public void setLargestLengthPathinSubtreeRootedAtThisNode(int largestLengthPathinSubtreeRootedAtThisNode) {
+		this.largestLengthPathinSubtreeRootedAtThisNode = largestLengthPathinSubtreeRootedAtThisNode;
 	}
 
 	@Override

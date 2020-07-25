@@ -1,0 +1,1 @@
+java -jar target\Detect-1.0-SNAPSHOT-jar-with-dependencies.jar seminar.jpeg 1203 779
