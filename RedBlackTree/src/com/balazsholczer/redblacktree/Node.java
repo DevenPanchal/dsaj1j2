@@ -7,6 +7,8 @@ public class Node {
 	private Node leftChild;
 	private Node rightChild;
 	private Node parent;
+	private int height;
+	 boolean isNullLeaf;
 
 	public Node(int data) {
 		this.data = data;
@@ -53,8 +55,18 @@ public class Node {
 		this.rightChild = rightChild;
 	}
 
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
 	@Override
 	public String toString() {
-		return ""+this.data;
+		return "" + this.data;
 	}
+
+
 }

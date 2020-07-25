@@ -60,19 +60,19 @@ public class AvlTree implements Tree {
 
 			if (node.getLeftNode() == null && node.getRightNode() == null) {
 				System.out.println("Removing a leaf node...");
-				return null;
+				return null;// removing the node
 			}
 
 			if (node.getLeftNode() == null) {
-				System.out.println("Removing the right child...");
+				System.out.println("Removing node with a right child...");
 				Node tempNode = node.getRightNode();
-				node = null;
-				return tempNode;
+				node = null; // removing the node
+				return tempNode; // returning its right child
 			} else if (node.getRightNode() == null) {
-				System.out.println("Removing the left child...");
+				System.out.println("Removing node with a left child...");
 				Node tempNode = node.getLeftNode();
-				node = null;
-				return tempNode;
+				node = null;  // removing the node
+				return tempNode; // returning its left child
 			}
 
 			// this is the node with two children case !!!
