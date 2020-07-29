@@ -17,117 +17,145 @@ public class AvlTree implements Tree {
 	private Node insert(Node node, int data) {
 
 		/* 1. Perform the normal BST insertion */
-		if (node == null) {
-			return new Node(data); // will return a new node when data is inserted successfully. // this will
-									// become left child or right child (depending on where call came) of the node
-									// from previous iteration
+
+		/*
+		 * Note: Duplicate keys not allowed. To allow duplicate keys, we could have
+		 * added equals sign i.e <= or >= when comparing data with the node.
+		 */
+		if ((node != null) && (data < node.getData())) {
+			// go left
+			node.setLeftNode(insert(node.getLeftNode(), data));
 		}
 
-		if (data < node.getData()) {
-			node.setLeftNode(insert(node.getLeftNode(), data)); // in the current loop, current node and data have a
-																// grandparent-grandchild relation if in the next loop
-																// the leftnode is not null. Else if the leftnode will
-																// be null, then they will end up having a parent child
-																// relation.
-		} else {
-			node.setRightNode(insert(node.getRightNode(), data)); // in the current loop, current node and data have a
-																	// grandparent-grandchild relation if in the next
-																	// loop the rightnode is not null. Else if the
-																	// rightnode will be null, then they will end up
-																	// having a parent child relation.
+		else if ((node != null) && (data > node.getData())) {
+			// go right
+			node.setRightNode(insert(node.getRightNode(), data));
+		}
 
-		} // Duplicate keys not allowed. To allow duplicate keys, we could have added
-			// equals sign i.e <= or >= when comparing data with the node.
+		else {
 
-		/* 2. Update height of this ancestor node */
+			// the node is null, so create the node
+			Node newNode = new Node(data);
+			// and return from here itself with the newly made node.
+			System.out.println("Inserting node " + newNode);
+			return newNode;
+		}
+
+		/*
+		 * 2. Update height of this caller node so that settleViolations can detect
+		 * violations
+		 */
 		node.setHeight(Math.max(height(node.getLeftNode()), height(node.getRightNode())) + 1);
 
-		// call settleViolation.
-		return settleViolation(data, node);
+		/*
+		 * 3. Settle AVL Violations
+		 * 
+		 * Important Notes-
+		 * 
+		 * Call settleViolations. Note that, we are starting to settle violations from
+		 * the parent and up i.e first call to settleViolation will have the parent of
+		 * inserted node going in. Ideally we should have started from grandparent and
+		 * up. But its fine.
+		 * 
+		 * Once inside, settleViolations you will see that the ingoing node assumes
+		 * grandfather position in the arrangement in terms of balance checking and
+		 * LL/LR/RR/RL case checking.
+		 * 
+		 * Also, very important - Don't return node. Return what you got after settling
+		 * the violations. That is now the correct child of the previous caller node
+		 * will be set. We do this by assigning the return value of settleViolations to
+		 * the current node, and then returning the current node.
+		 */
+		node = settleViolations(node);
+
+		// return the node
+		return node;
+
 	}
 
 	private Node delete(Node node, int data) {
 
-		if (node == null)
-			return node;
-
-		// first we have to look for the node we want to get rid of
-		if (data < node.getData()) { // data smaller than given node's data -> go to the left recursively
+		if ((node != null) && (data < node.getData())) {
 			node.setLeftNode(delete(node.getLeftNode(), data));
-		} else if (data > node.getData()) { // data greater than given node's data -> go to the right recursively
+		} else if ((node != null) && (data > node.getData())) {
 			node.setRightNode(delete(node.getRightNode(), data));
-		} else { // we have found the node we want to remove !!!
+		} else {
 
-			if (node.getLeftNode() == null && node.getRightNode() == null) {
-				System.out.println("Removing a leaf node...");
-				return null;// removing the node
+			// no matching node found, and reached a leaf null node.In this case just return
+			// this node i.e null
+			if (node == null) {
+				System.out.println("Sorry, no matching node");
+				return node;
 			}
 
-			if (node.getLeftNode() == null) {
-				System.out.println("Removing node with a right child...");
-				Node tempNode = node.getRightNode();
-				node = null; // removing the node
-				return tempNode; // returning its right child
-			} else if (node.getRightNode() == null) {
-				System.out.println("Removing node with a left child...");
-				Node tempNode = node.getLeftNode();
-				node = null;  // removing the node
-				return tempNode; // returning its left child
+			// else we found the node we were looking for! Check for 3 deletion cases
+			else {
+
+				// we have found the node we want to remove !!!
+				// if the current node has no children, you can remove it right away.
+				if (node.getLeftNode() == null && node.getRightNode() == null) {
+					System.out.println("Removing a leaf node " + node.getData());
+					return null;/*
+								 * return null so that the calling node can set its child reference to null.
+								 * Since the call to delete comes from a setLeftChild/setRightChild method. This
+								 * is important because we are taking care of the structure of the tree
+								 */
+				}
+
+				if (node.getLeftNode() == null) {
+					System.out.println("Removing node " + node.getData() + " which has only a right child "
+							+ node.getRightNode().getData());
+					Node tempNode = node.getRightNode();
+					node = null; // removing the node
+					return tempNode; // returning its right child
+				} else if (node.getRightNode() == null) {
+					System.out.println("Removing node " + node.getData() + " which has only a left child "
+							+ node.getLeftNode().getData());
+					Node tempNode = node.getLeftNode();
+					node = null; // removing the node
+					return tempNode; // returning its left child
+				}
+
+				// this is the node with two children case !!!
+				System.out.println("Removing node " + node.getData() + " which has 2 children "
+						+ node.getLeftNode().getData() + "and " + node.getRightNode().getData());
+				Node tempNode = getPredecessor(node.getLeftNode());
+				/*
+				 * Argument is left child of current node i.e left subtree. getPredecessor
+				 * searches the rightmost node i.e largest node of the left subtree.
+				 */
+
+				node.setData(tempNode.getData());
+				node.setLeftNode(delete(node.getLeftNode(), tempNode.getData()));
 			}
-
-			// this is the node with two children case !!!
-			System.out.println("Removing item with two children...");
-			Node tempNode = getPredecessor(node.getLeftNode());
-
-			node.setData(tempNode.getData());
-			node.setLeftNode(delete(node.getLeftNode(), tempNode.getData()));
 		}
 
+		/*
+		 * 2. Update height of this caller node so that settleViolations can detect
+		 * violations
+		 */
 		node.setHeight(Math.max(height(node.getLeftNode()), height(node.getRightNode())) + 1);
 
-		// have to check on every delete operation whether the tree has become
-		// unbalanced or not !!!
-		// Note that the program flow will only reach here for those nodes in the
-		// recursion chain that have not returned (return statement) uptil now. that is
-		// nodes starting from parent of deleted node.
-		return settleDeletion(node);
-	}
-
-	// this is similar to settleViolation except no need to check for any data.
-	// we could have written this using 4 if cases but we just adopt a stylish
-	// approach here.
-	private Node settleDeletion(Node node) {
-
-		int balance = getBalance(node);
-
-		// OK, we know the tree is left heavy BUT it can be left-right heavy or
-		// left-left heavy
-		if (balance > 1) {
-
-			// left right heavy situation: left rotation on parent + right rotation on
-			// grandparent
-			if (getBalance(node.getLeftNode()) < 0) {
-				node.setLeftNode(leftRotation(node.getLeftNode()));
-			}
-
-			// this is the right rotation on grandparent ( if left-left heavy, thats single
-			// right rotation is needed
-			return rightRotation(node);
-		}
-
-		// OK, we know the tree is right heavy BUT it can be left-right heavy or
-		// right-right heavy
-		if (balance < -1) {
-			// right - left heavy so we need a right rotation ( on parent!!! ) before left
-			// rotation
-			if (getBalance(node.getRightNode()) > 0) {
-				node.setRightNode(rightRotation(node.getRightNode()));
-			}
-
-			// left rotation on diagram ppt's grand parent
-			return leftRotation(node);
-		}
-
+		/*
+		 * 3. Settle AVL Violations
+		 * 
+		 * Important Notes-
+		 * 
+		 * Call settleViolations. Note that, we are starting to settle violations from
+		 * the parent and up i.e first call to settleViolation will have the parent of
+		 * inserted node going in.
+		 * 
+		 * Once inside, settleViolations you will see that the ingoing node assumes
+		 * grandfather position in the arrangement in terms of balance checking and
+		 * LL/LR/RR/RL case checking.
+		 * 
+		 * Also, very important - Don't return node. Return what you got after settling
+		 * the violations. That is now the correct child of the previous caller node
+		 * will be set. We do this by assigning the return value of settleViolations to
+		 * the current node, and then returning the current node.
+		 */
+		node = settleViolations(node);
+		// return the node
 		return node;
 	}
 
@@ -141,39 +169,40 @@ public class AvlTree implements Tree {
 		return predecessor;
 	}
 
-	// Note: We settle violations after inserting data. i.e the newest key/data/node
-	// has already been inserted.
-	// So, in this case, arguments, Node node= grandparent, data = grandchild.. and
-	// in the 'if' condition, we compare data (i.e data of grandchild) with data of
-	// grandparent's child i.e parent of the grandchild
-	private Node settleViolation(int data, Node node) {
+	private Node settleViolations(Node node) {
 
-		int balance = getBalance(node);
+		// Now we will see the current node, as the grandparent of the arrangement.
 
-		// this is the Case I !!!! left-left
-		if (balance > 1 && data < node.getLeftNode().getData()) {
-			System.out.println("Tree is left left heavy...");
-			return rightRotation(node);
+		// LL or LR case
+		if (getBalanceLeftMinusRightSubtree(node) > 1) {
+
+			// if LR case, then correct and convert to LL case
+			if (getBalanceLeftMinusRightSubtree(node.getLeftNode()) < 0) {
+				/*
+				 * middle value node is at the bottom. so bring it in the middle to convert to
+				 * LL case. To do this, we will call left Rotation on the current topologically
+				 * middle node.
+				 */
+				node.setLeftNode(leftRotation(node.getLeftNode()));
+			}
+			// Now correct the LL case (also the LR case which by this time is also LL case)
+			return rightRotation(node); // pull toran towards right
 		}
 
-		// this is the Case II right-right !!!!
-		if (balance < -1 && data > node.getRightNode().getData()) {
-			System.out.println("Tree is right right heavy...");
-			return leftRotation(node);
-		}
+		// RR or RL case
+		if (getBalanceLeftMinusRightSubtree(node) < -1) {
+			// if RL case, then correct and convert to RR case
+			if (getBalanceLeftMinusRightSubtree(node.getRightNode()) > 0) {
+				node.setRightNode(rightRotation(node.getRightNode()));
+			}
+			/*
+			 * middle value node is at the bottom. so bring it in the middle to convert to
+			 * RR case. To do this, we will call right Rotation on the current topologically
+			 * middle node.
+			 */
 
-		// left right situation
-		if (balance > 1 && data > node.getLeftNode().getData()) {
-			System.out.println("Tree is left right heavy...");
-			node.setLeftNode(leftRotation(node.getLeftNode()));
-			return rightRotation(node);
-		}
-
-		// right left situation
-		if (balance < -1 && data < node.getRightNode().getData()) {
-			System.out.println("Tree is right left heavy...");
-			node.setRightNode(rightRotation(node.getRightNode()));
-			return leftRotation(node);
+			// Now correct the RR case (also the RL case which by this time is also RR case)
+			return leftRotation(node); // pull toran towards left
 		}
 
 		return node;
@@ -231,7 +260,7 @@ public class AvlTree implements Tree {
 		return node.getHeight();
 	}
 
-	private int getBalance(Node node) {
+	private int getBalanceLeftMinusRightSubtree(Node node) {
 
 		if (node == null) {
 			return 0;
@@ -260,7 +289,7 @@ public class AvlTree implements Tree {
 
 	private void preOrderTraversal(Node node) {
 
-		System.out.println(node);
+		System.out.print(node + " --> ");
 
 		if (node.getLeftNode() != null)
 			preOrderTraversal(node.getLeftNode());
@@ -274,7 +303,7 @@ public class AvlTree implements Tree {
 		if (node.getLeftNode() != null)
 			inOrderTraversal(node.getLeftNode());
 
-		System.out.println(node);
+		System.out.print(node + " --> ");
 
 		if (node.getRightNode() != null)
 			inOrderTraversal(node.getRightNode());
