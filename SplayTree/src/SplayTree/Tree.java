@@ -1,9 +1,10 @@
 package SplayTree;
 
 public interface Tree<T extends Comparable<T>> {
-	public void insert(T data);
-	public Node<T> find(T data);
+	public void iterativeInsert(T data);
+	public Node<T> iterativeFind(T data);
 	public T getMin();
 	public T getMax();
 	public void inOrderTraversal();
+	void preOrderTraversal();
 }

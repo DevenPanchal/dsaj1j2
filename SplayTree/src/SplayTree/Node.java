@@ -5,12 +5,14 @@ public class Node<T extends Comparable<T>> {
 	private T data;
 	private Node<T> rightNode;
 	private Node<T> leftNode;
-	private Node<T> parentNode;
+	private Node<T> parentNode; // becuase the splaying is implemented as a while loop taking only the
+								// recentNode. This while loop stops at the root's parent ==null. So we need the
+								// parent node of every node.
 
-	public Node(T data){
+	public Node(T data) {
 		this.data = data;
 	}
-	
+
 	public T getData() {
 		return data;
 	}
@@ -42,7 +44,7 @@ public class Node<T extends Comparable<T>> {
 	public void setParentNode(Node<T> parentNode) {
 		this.parentNode = parentNode;
 	}
-	
+
 	@Override
 	public String toString() {
 		return this.data.toString();
