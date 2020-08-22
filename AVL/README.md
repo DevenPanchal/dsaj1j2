@@ -68,13 +68,30 @@ Case1 : Matching node has no children
 Case2 : Matching node has 1 child
 Case3 : Matching node has 2 children
 
-All 3 cases return with different nodes after deleting the matching node. This is ver important note.
+All 3 cases return with different nodes after deleting the matching node. This is very important note.
 
 
 **3. RightRotate and LeftRotate :**
-They perform rotations and they return the **new root** of the group.
+As an interface here, they are performing rotations and returning the **new root** of the **group** from the 3 (note this is NOT the same as **Arrangement**. This is the **Group** we are talking about)
 
 
+	Group:
+	   
+	   O
+	  / \
+    O   O
+
+
+	Arrangement:
+	LL/LR/RR/RL and refers to 3 generations of nodes
+	
+What do the rotate functions exactly do?
+a. Rotate on the nodeOnWhichRotationIsDemanded
+b. Changes the link relationships between nodes but the names and their contents remain the same. Inside or Outside the function. Again, only connections/structure is changing.
+c. A sophisticated Rotate may also update/fix the parent, left,right relationships of all the nodes in the group appropriately, following the rotation. In SplayTree we use sophisticated Rotate functions.  In AVL tree we use non-sophisticated rotate functions. Both functions perform the exact same rotate with the exact same piece of code. The only difference is that the sophisticated function, after finishing the rotations does updation of parent, left, right nodes for all the nodes in the group.
+d. They may return the new root of the group. If return type is void, they wouldn't return it.
+If they are returning the new root, the caller of this rotation may choose to use it appropriately.
+e. Before rotation, nodeOnWhichRotationIsDemanded is the root.
 
 **4.settleViolations(node) or reBalance(node)**
 The first node to go in this function is the Parent of the inserted or the deleted node.
@@ -84,7 +101,9 @@ So this function -
 1. Checks the balance of **node**   getbalance() helper method checks the balance upto this node. 
 Note: Balance is checked and corrected for each node, for which settleViolations is called from the insert/delete recursion that is folding back up. This is how we make sure the entire tree from bottom to top is balanced. 
 
-2. Calls Right/ Left rotations depending on the LL/LR/RR/RL cases.
+2. Calls Right/ Left rotations depending on the LL/LR/RR/RL cases. Chooses to use, or not use the new root that the rotations return.
+    Note: The rotations here are unsophisticated rotations.  This sometimes leaves some more responsibility on the caller i.e settleViolations function in this case.
+    In SplayTrees implementation, we have used sophisticated rotations
 
 3. Returns this **node**.
 

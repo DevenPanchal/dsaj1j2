@@ -1,7 +1,5 @@
 package SplayTree;
 
-
-
 public class SplayTree<T extends Comparable<T>> implements Tree<T> {
 
 	private Node<T> root;
@@ -16,12 +14,7 @@ public class SplayTree<T extends Comparable<T>> implements Tree<T> {
 	}
 
 	public void delete(T data) {
-		// DEVEN: The delete method here can be a combination of find, splay for
-		// searched item, deleting from a BST- 3 cases of deletion.
-		// No balancing required. Since it doesn't matter if the tree is
-		// balanced/unbalanced after insertion/deletion. Remember, our aim for a Splay
-		// tree is to keep
-		// recently searched/ inserted/asked to be deleted item at the root.
+		// Refer to README
 	}
 
 	public void recursiveInsert(T data) {
@@ -164,50 +157,269 @@ public class SplayTree<T extends Comparable<T>> implements Tree<T> {
 
 	}
 
-	private void splayNode(Node<T> recentNode) {
+	@Override
+	public void iterativeFind(T data) {
 
-		{
+		Node<T> node = this.root;
+		Node<T> nodeParent = null;
 
-			while (recentNode.getParentNode() != null)// i.e repeat until recent node is the root node. i.e its parent
-														// is null
-			{
+		// find the node
+		while (node != null) {
 
-				// ZIG SITUATION - So test for L or R case
-				if (recentNode.getParentNode().getParentNode() == null) {
-					// recent node is the left Node
-					if (recentNode.getParentNode().getLeftNode() == recentNode) {
-						rightRotation(recentNode.getParentNode());
-					} else { // recent node is the right Node
-						leftRotation(recentNode.getParentNode());
-					}
+			nodeParent = node; // on every iteration update the parentNode
 
-					// ZIG-ZIG SITUATION - So test for LL or RR cases
-				} else if (recentNode.getParentNode().getLeftNode() == recentNode
-						&& recentNode.getParentNode().getParentNode().getLeftNode() == recentNode.getParentNode()) {
-					// LL case
-					rightRotation(recentNode.getParentNode().getParentNode());
-					rightRotation(recentNode.getParentNode());
-				} else if (recentNode.getParentNode().getRightNode() == recentNode
-						&& recentNode.getParentNode().getParentNode().getRightNode() == recentNode.getParentNode()) {
-					// RR case
-					leftRotation(recentNode.getParentNode().getParentNode());
-					leftRotation(recentNode.getParentNode());
-				}
-
-				// ZIG-ZAG SITUATION - So test for LR and RL cases
-				else if (recentNode.getParentNode().getLeftNode() == recentNode
-						&& recentNode.getParentNode().getParentNode().getRightNode() == recentNode.getParentNode()) {
-					// LR case
-					rightRotation(recentNode.getParentNode());
-					leftRotation(recentNode.getParentNode());
-				} else {
-					// RL case
-					leftRotation(recentNode.getParentNode());
-					rightRotation(recentNode.getParentNode());
-				}
+			if (node.getData().compareTo(data) < 0) {
+				node = node.getRightNode();
+			} else if (node.getData().compareTo(data) > 0) {
+				node = node.getLeftNode();
+			} else {
+				splayNode(node); // splaying required on every insert or every find. // this is where this
+									// differs from AVL tree. We splay even for found/inserted node.
+				return;
 			}
 		}
 
+		// if search fails i.e you reach null node, then still splay with the searched node.
+		// the null node now becomes a real node i.e search failed node.
+		
+		node = new Node<T>(data);
+		node.setParentNode(nodeParent);
+
+		// make sure, this newly created node's parent is updated with this node too.
+
+		// so our aim with first loop was to find the node, then give it its parent, now
+		// with this loop we want to tell its parent whether this node is left child,
+		// rightchild or root.
+		// this much info only is enough for the splaynode function which repairs the
+		// tree according to splaying properties.Its return value i.e recently splayed
+		// node - then may or may not be used by the caller.
+
+		if (nodeParent == null) {
+			this.root = node; // the current node is root, if parentNode is null. Else set it appropriately as
+								// the left or right child of the parent after comparison.
+		} else if (nodeParent.getData().compareTo(node.getData()) < 0) {
+			nodeParent.setRightNode(node);
+		} else {
+			nodeParent.setLeftNode(node);
+		}
+
+		splayNode(node); // splaying on the failed node which was created.
+		return;
+	}
+
+	@Override
+	public void iterativeInsert(T data) {
+
+		Node<T> node = this.root;
+		Node<T> nodeParent = null;
+
+		// find the node
+		while (node != null) {
+
+			nodeParent = node; // on every iteration update the parentNode
+
+			if (node.getData().compareTo(data) < 0) {
+				node = node.getRightNode();
+			} else {
+				node = node.getLeftNode();
+			}
+		}
+
+		// the moment node is null, we insert data and also add its parent
+		node = new Node<T>(data);
+		node.setParentNode(nodeParent);
+
+		// make sure, this newly created node's parent is updated with this node too.
+
+		// so our aim with first loop was to find the node, then give it its parent, now
+		// with this loop we want to tell its parent whether this node is left child,
+		// rightchild or root.
+		// this much info only is enough for the splaynode function which repairs the
+		// tree according to splaying properties.Its return value i.e recently splayed
+		// node - then may or may not be used by the caller.
+
+		if (nodeParent == null) {
+			this.root = node; // the current node is root, if parentNode is null. Else set it appropriately as
+								// the left or right child of the parent after comparison.
+		} else if (nodeParent.getData().compareTo(node.getData()) < 0) {
+			nodeParent.setRightNode(node);
+		} else {
+			nodeParent.setLeftNode(node);
+		}
+
+		splayNode(node); // splaying required on every insert or every find.
+
+	}
+
+	@Override
+	public void anotherIterativeInsert(T data) {
+		Node<T> node = this.root;
+		Node<T> nodeParent = null;
+
+		// find the node
+		while (node != null) {
+
+			nodeParent = node; // on every iteration update the parentNode
+
+			if (node.getData().compareTo(data) < 0) {
+				node = node.getRightNode();
+			} else if (node.getData().compareTo(data) > 0) {
+				node = node.getLeftNode();
+			} else {
+
+				// the moment node is null, we insert data and also add its parent
+				Node<T> newNode = new Node<T>(data);
+				newNode.setParentNode(nodeParent);
+
+				// make sure, this newly created node's parent is updated with this node too.
+
+				// so now
+				// with this loop we want to tell its parent whether this node is left child,
+				// rightchild or root.
+				// this much info only is enough for the splaynode function which repairs the
+				// tree according to splaying properties.Its return value i.e recently splayed
+				// node - then may or may not be used by the caller.
+
+				if (nodeParent == null) {
+					this.root = newNode; // the current node is root, if parentNode is null. Else set it appropriately
+											// as
+											// the left or right child of the parent after comparison.
+				} else if (nodeParent.getData().compareTo(newNode.getData()) < 0) {
+					nodeParent.setRightNode(newNode);
+				} else {
+					nodeParent.setLeftNode(newNode);
+				}
+
+				splayNode(newNode); // splaying required on every insert or every find.
+
+			}
+		}
+
+	}
+
+	// A utility function to right rotate subtree rooted with
+	// nodeOnWhichRotationIsDemanded.
+	private Node<T> rotateRight(Node<T> nodeOnWhichRotationIsDemanded) {
+
+		// Before rotation, nodeOnWhichRotationIsDemanded is the root
+		Node<T> tempLeftNode = nodeOnWhichRotationIsDemanded.getLeftNode();
+
+		// exactly same as the AVL rotation - except we need to check for null i.e
+		// object exists or not before setting its parent, right and left children.
+		// This is required because the splay function is not interested in doing these
+		// adjustments
+		if (tempLeftNode != null) {
+
+			Node<T> t = tempLeftNode.getRightNode();
+			nodeOnWhichRotationIsDemanded.setLeftNode(t);
+			if (t != null) {
+				t.setParentNode(nodeOnWhichRotationIsDemanded);
+			}
+
+			// give the new root, its parent
+			tempLeftNode.setParentNode(nodeOnWhichRotationIsDemanded.getParentNode());
+		}
+		// After rotation, tempLeftNode is the root
+
+		if (nodeOnWhichRotationIsDemanded.getParentNode() == null) {
+			this.root = tempLeftNode;
+		} else if (nodeOnWhichRotationIsDemanded == nodeOnWhichRotationIsDemanded.getParentNode().getLeftNode()) {
+			nodeOnWhichRotationIsDemanded.getParentNode().setLeftNode(tempLeftNode);
+		} else {
+			nodeOnWhichRotationIsDemanded.getParentNode().setRightNode(tempLeftNode);
+		}
+
+		if (tempLeftNode != null) {
+			tempLeftNode.setRightNode(nodeOnWhichRotationIsDemanded);
+		}
+
+		// set the new root as parent of nodeOnWhichRotationIsDemanded
+		nodeOnWhichRotationIsDemanded.setParentNode(tempLeftNode);
+
+		// return new root of the group
+		return tempLeftNode;
+	}
+
+	// A utility function to left rotate subtree rooted with
+	// nodeOnWhichRotationIsDemanded
+	private Node<T> rotateLeft(Node<T> nodeOnWhichRotationIsDemanded) {
+
+		// Before rotation, nodeOnWhichRotationIsDemanded is the root
+		Node<T> tempRightNode = nodeOnWhichRotationIsDemanded.getRightNode();
+
+		// exactly same as the AVL rotation - except we need to check for null i.e
+		// object exists or not before setting its parent, right and left children.
+		// This is required because the splay function is not interested in doing these
+		// adjustments.
+		if (tempRightNode != null) {
+
+			Node<T> t = tempRightNode.getLeftNode();
+			nodeOnWhichRotationIsDemanded.setRightNode(t);
+			if (t != null) {
+				t.setParentNode(nodeOnWhichRotationIsDemanded);
+			}
+
+			// give the new root, its parent
+			tempRightNode.setParentNode(nodeOnWhichRotationIsDemanded.getParentNode());
+		}
+		// After rotation, tempRightNode is the root
+
+		if (nodeOnWhichRotationIsDemanded.getParentNode() == null) {
+			this.root = tempRightNode;
+		} else if (nodeOnWhichRotationIsDemanded == nodeOnWhichRotationIsDemanded.getParentNode().getLeftNode()) {
+			nodeOnWhichRotationIsDemanded.getParentNode().setLeftNode(tempRightNode);
+		} else {
+			nodeOnWhichRotationIsDemanded.getParentNode().setRightNode(tempRightNode);
+		}
+
+		if (tempRightNode != null) {
+			tempRightNode.setLeftNode(nodeOnWhichRotationIsDemanded);
+		}
+
+		// set the new root as parent of nodeOnWhichRotationIsDemanded
+		nodeOnWhichRotationIsDemanded.setParentNode(tempRightNode);
+
+		// return new root of the group
+		return tempRightNode;
+	}
+
+	private void splayNode(Node<T> node) {
+
+		while (node.getParentNode() != null)// i.e repeat until node is the root node. i.e its parent is null
+		{
+
+			// ZIG SITUATION - So test for L or R case
+			if (node.getParentNode().getParentNode() == null) {
+				if (node.getParentNode().getLeftNode() == node) { // L case
+					rotateRight(node.getParentNode());
+				} else { // R case
+					rotateLeft(node.getParentNode());
+				}
+				// ZIG-ZIG SITUATION - So test for LL or RR cases
+			} else if (node.getParentNode().getLeftNode() == node
+					&& node.getParentNode().getParentNode().getLeftNode() == node.getParentNode()) {
+				// LL case
+				rotateRight(node.getParentNode().getParentNode());
+				rotateRight(node.getParentNode());
+			} else if (node.getParentNode().getRightNode() == node
+					&& node.getParentNode().getParentNode().getRightNode() == node.getParentNode()) {
+				// RR case
+				rotateLeft(node.getParentNode().getParentNode());
+				rotateLeft(node.getParentNode());
+			}
+
+			// ZIG-ZAG SITUATION - So test for LR and RL cases
+			else if (node.getParentNode().getLeftNode() == node
+					&& node.getParentNode().getParentNode().getRightNode() == node.getParentNode()) {
+				// RL case
+				rotateRight(node.getParentNode());
+				rotateLeft(node.getParentNode());
+			} else {
+				// LR case
+				rotateLeft(node.getParentNode());
+				rotateRight(node.getParentNode());
+			}
+		}
 	}
 
 	@Override
@@ -242,11 +454,11 @@ public class SplayTree<T extends Comparable<T>> implements Tree<T> {
 		System.out.print(node.getData() + " ");
 
 		if (node.getLeftNode() != null) {
-			inOrderTraversal(node.getLeftNode());
+			preOrderTraversal(node.getLeftNode());
 		}
 
 		if (node.getRightNode() != null) {
-			inOrderTraversal(node.getRightNode());
+			preOrderTraversal(node.getRightNode());
 		}
 	}
 
@@ -294,203 +506,4 @@ public class SplayTree<T extends Comparable<T>> implements Tree<T> {
 		return this.root == null;
 	}
 
-	@Override
-	public Node<T> iterativeFind(T data) {
-
-		Node<T> node = this.root;
-
-		// find the node
-		while (node != null) {
-			if (node.getData().compareTo(data) < 0) {
-				node = node.getRightNode();
-			} else if (node.getData().compareTo(data) > 0) {
-				node = node.getLeftNode();
-			} else {
-				splay(node); // splaying required on every insert or every find. // this is where this
-								// differs from AVL tree. We splay even for found/inserted node.
-				return node;
-			}
-		}
-
-		// if search fails i.e you reach null , then still splay with the searched node.
-		// But return null.
-		splay(node); // splaying required on every insert or every find.
-
-		return null;
-	}
-
-	public void iterativeInsert(T data) {
-
-		Node<T> node = this.root;
-		Node<T> nodeParent = null;
-
-		// find the node
-		while (node != null) {
-
-			nodeParent = node; // on every iteration update the parentNode
-
-			if (node.getData().compareTo(data) < 0) {
-				node = node.getRightNode();
-			} else {
-				node = node.getLeftNode();
-			}
-		}
-
-		// the moment node is null, we insert data and also add its parent
-		node = new Node<T>(data);
-		node.setParentNode(nodeParent);
-
-		// make sure, this newly created node's parent is updated with this node too.
-
-		// so our aim with first loop was to find the node, then give it its parent, now
-		// with this loop we want to tell its parent whether this node is left child,
-		// rghtchild or root.
-		// this much info only is enough for the splaynode function which returns the
-		// recentnode after repairing the tree according to splaying properties.
-
-		if (nodeParent == null) {
-			this.root = node; // the current node is root, if parentNode is null. Else set it appropriately as
-								// the left or right child of the parent after comparison.
-		} else if (nodeParent.getData().compareTo(node.getData()) < 0) {
-			nodeParent.setRightNode(node);
-		} else {
-			nodeParent.setLeftNode(node);
-		}
-
-		splay(node); // splaying required on every insert or every find.
-
-	}
-
-	// A utility function to right rotate subtree rooted with node. See its use in
-	// Rotations.jpg
-	private Node<T> rightRotation(Node<T> node) {
-
-		System.out.println("Rotating to the right on node: " + node);
-
-		// Before rotation, node is the root
-		Node<T> tempLeftNode = node.getLeftNode();
-		Node<T> t = tempLeftNode.getRightNode();
-
-		// Perform rotation
-		tempLeftNode.setRightNode(node); // After rotation, tempLeftNode is the root
-		node.setLeftNode(t);
-
-		// Return new root
-		return tempLeftNode;
-	}
-
-	// A utility function to left rotate subtree rooted with node. See its use in
-	// Rotations.jpg
-	private Node<T> leftRotation(Node<T> node) {
-
-		System.out.println("Rotating to the left on node:" + node);
-
-		// Before rotation, node is the root
-		Node<T> tempRightNode = node.getRightNode();
-		Node<T> t = tempRightNode.getLeftNode();
-
-		// Perform rotation
-		tempRightNode.setLeftNode(node); // After rotation, tempRightNode is the root
-		node.setRightNode(t);
-
-		// Return new root
-		return tempRightNode;
-	}
-
-	private void rotateLeft(Node<T> node) {
-
-		Node<T> tempNode = node.getRightNode();
-
-		if (tempNode != null) {
-
-			node.setRightNode(tempNode.getLeftNode());
-
-			if (tempNode.getLeftNode() != null) {
-				tempNode.getLeftNode().setParentNode(node);
-			}
-
-			tempNode.setParentNode(node.getParentNode());
-		}
-
-		if (node.getParentNode() == null) {
-			this.root = tempNode;
-		} else if (node == node.getParentNode().getLeftNode()) {
-			node.getParentNode().setLeftNode(tempNode);
-		} else {
-			node.getParentNode().setRightNode(tempNode);
-		}
-
-		if (tempNode != null) {
-			tempNode.setLeftNode(node);
-		}
-
-		node.setParentNode(tempNode);
-	}
-
-	private void rotateRight(Node<T> node) {
-
-		Node<T> tempNode = node.getLeftNode();
-
-		if (tempNode != null) {
-			node.setLeftNode(tempNode.getRightNode());
-
-			if (tempNode.getRightNode() != null) {
-				tempNode.getRightNode().setParentNode(node);
-			}
-
-			tempNode.setParentNode(node.getParentNode());
-		}
-
-		if (node.getParentNode() == null) {
-			this.root = tempNode;
-		} else if (node == node.getParentNode().getLeftNode()) {
-			node.getParentNode().setLeftNode(tempNode);
-		} else {
-			node.getParentNode().setRightNode(tempNode);
-		}
-
-		if (tempNode != null) {
-			tempNode.setRightNode(node);
-		}
-
-		node.setParentNode(tempNode);
-	}
-
-	private void splay(Node<T> node) {
-
-		while (node.getParentNode() != null)// i.e repeat until node is the root node. i.e its parent is null
-		{
-
-			// ZIG SITUATION
-			if (node.getParentNode().getParentNode() == null) {
-				if (node.getParentNode().getLeftNode() == node) {// so node is a left child + grandparent is null
-					rotateRight(node.getParentNode());
-				} else { // so node is a right child + grandparent is null
-					rotateLeft(node.getParentNode());
-				}
-				// ZIG-ZIG SITUATION
-			} else if (node.getParentNode().getLeftNode() == node
-					&& node.getParentNode().getParentNode().getLeftNode() == node.getParentNode()) { // so node is left
-																										// child and
-																										// parent is a
-																										// left child
-				rotateRight(node.getParentNode().getParentNode());
-				rotateRight(node.getParentNode());
-			} else if (node.getParentNode().getRightNode() == node // so node is right child and parent is a right child
-					&& node.getParentNode().getParentNode().getRightNode() == node.getParentNode()) {
-				rotateLeft(node.getParentNode().getParentNode());
-				rotateLeft(node.getParentNode());
-			}
-			// ZIG-ZAG SITUATION
-			else if (node.getParentNode().getLeftNode() == node // so node is left child and parent is right child
-					&& node.getParentNode().getParentNode().getRightNode() == node.getParentNode()) {
-				rotateRight(node.getParentNode());
-				rotateLeft(node.getParentNode()); // because the new node is in the middle. so node.getParentNode()
-													// means
-			} else {// so node is right child and parent is left child
-				rotateLeft(node.getParentNode());
-				rotateRight(node.getParentNode()); // because the new node is in the middle.
-			}
-		}
-	}
 }

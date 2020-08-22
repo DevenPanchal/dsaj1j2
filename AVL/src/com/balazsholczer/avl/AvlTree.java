@@ -208,8 +208,7 @@ public class AvlTree implements Tree {
 		return node;
 	}
 
-	// A utility function to right rotate subtree rooted with node. See its use in
-	// Rotations.jpg
+	// A utility function to right rotate subtree rooted with node.
 	private Node rightRotation(Node node) {
 
 		System.out.println("Rotating to the right on node: " + node);
@@ -229,8 +228,7 @@ public class AvlTree implements Tree {
 		return tempLeftNode;
 	}
 
-	// A utility function to left rotate subtree rooted with node. See its use in
-	// Rotations.jpg
+	// A utility function to left rotate subtree rooted with node.
 	private Node leftRotation(Node node) {
 
 		System.out.println("Rotating to the left on node:" + node);
