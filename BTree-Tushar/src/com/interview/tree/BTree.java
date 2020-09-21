@@ -4,31 +4,42 @@ package com.interview.tree;
  * http://www.geeksforgeeks.org/b-tree-set-1-insert-2/
  * http://www.geeksforgeeks.org/b-tree-set-1-introduction-2/
  */
-public class BTree {
-	private BTreeNode root = null;
-	private static int T = 2;
 
-	public void traverse() {
-		traverse(root);
+public class BTree {
+	private Node root = null;
+	private static int T = 2;// we can change the degree to something else also.
+
+	public void traversal() {
+
+		if (root == null) {
+			System.out.println("There is no tree!");
+		} else {
+			traversal(root);
+		}
 	}
 
-	// Function to traverse all nodes in a subtree rooted with this node
-	private void traverse(BTreeNode root) {
+	private void traversal(Node node) {
 
-		// There are n keys and n+1 children, traverse through n keys
-		// and first n children
-		for (int i = 0; i < root.n; i++) {
+		// For loop because we have n+1 children here, and n keys here - this was not
+		// required when traversing a normal BST
+		// the for loop will help us traverse n+1 children and also print n keys.
+		// But this for loop is common and so we decided it should go uptil n.
+		// So since there are n+1 children, the last child is taken care of outside the
+		// loop.
+		for (int i = 0; i < node.currentSizeOfNode; i++) {
 
-			// If this is not leaf, then before printing key[i],
-			// traverse the subtree rooted with child C[i].
-			if (!root.isLeaf) {
-				traverse(root.child[i]);
+			// LN traversal like in LNR traversal
+			// if the node is not a leaf, traverse its children nodes
+			if (!node.isLeaf) {
+				traversal(node.childrenNodes[i]); // child node becomes the new root.
 			}
-			System.out.print(root.keys[i] + " ");
+
+			// if the node is a leaf then, print its elements in order.
+			System.out.print(node.dataArray[i] + " ");
 		}
-		// Print the subtree rooted with last child i.e (n+1)th child
-		if (!root.isLeaf) {
-			traverse(root.child[root.n]);
+
+		if (!node.isLeaf) {
+			traversal(node.childrenNodes[node.currentSizeOfNode]);
 		}
 	}
 
@@ -36,21 +47,23 @@ public class BTree {
 		return search(root, data);
 	}
 
-	public boolean search(BTreeNode root, int data) {
+	public boolean search(Node root, int incomingData) {
 		// local variable 'i' will be used to iterate over the keys.
 		int i = 0;
 
+		
+		// CAN YOU REWRITE THIS WITH FOR LOOP ??????
 		// while i is less than number of keys, and the key is less than data, move to
 		// next key in the current node and increment 'i'. This i will be used further
 		// down to select the correct child.
-		while (i < root.n && root.keys[i] < data) {
+		while (i < root.currentSizeOfNode && root.dataArray[i] < incomingData) {
 			i++;
 		}
 
 		// while i is less than number of keys, and the key is equal to the data, return
 		// true. Ideally we want to return the block i.e chunk i.e node here.
-		if (i < root.n && root.keys[i] == data) {
-			return true; // shouldn't this be return root?
+		if (i < root.currentSizeOfNode && root.dataArray[i] == incomingData) {
+			return true;
 		}
 
 		if (root.isLeaf) {
@@ -61,28 +74,28 @@ public class BTree {
 
 		// if we could not find the data in the root node, then move to the correct
 		// child, since 'i' has the correct value
-		return search(root.child[i], data);
+		return search(root.childrenNodes[i], incomingData);
 	}
 
-	public void insert(int data) {
+	public void insert(int incomingData) {
 		if (root == null) {
-			root = BTreeNode.newNode(data);
+			root = Node.newNode(incomingData);
 			return;
 		}
-		SplitResult sr = insert(root, data);
+		SplitResult sr = insert(root, incomingData);
 		if (sr != null) {
-			BTreeNode newRoot = BTreeNode.newNode();
+			Node newRoot = Node.newNode();
 			// new root's/node's number of keys becomes 1 because sr.c will be its key
-			newRoot.n = 1;
+			newRoot.currentSizeOfNode = 1;
 			newRoot.isLeaf = false; // new root/node is no longer the child
-			newRoot.keys[0] = sr.c;
-			newRoot.child[0] = sr.r1;// r1 and r2 are now the children of the new root
-			newRoot.child[1] = sr.r2;
+			newRoot.dataArray[0] = sr.c;
+			newRoot.childrenNodes[0] = sr.r1;// r1 and r2 are now the children of the new root
+			newRoot.childrenNodes[1] = sr.r2;
 			root = newRoot; // newRoot is now the root
 		}
 	}
 
-	private SplitResult insert(BTreeNode root, int data) {
+	private SplitResult insert(Node root, int data) {
 
 		if (root.isLeaf) {
 			// childless node
@@ -100,11 +113,11 @@ public class BTree {
 			int i = 0;
 			// There are n keys and n+1 children, traverse through n keys
 			// and first n children
-			for (; i < root.n; i++) {
-				if (data <= root.keys[i]) {
+			for (; i < root.currentSizeOfNode; i++) {
+				if (data <= root.dataArray[i]) {
 					// if data is less than the key, go to that numbered corresponding child, and
 					// recurse on insert
-					SplitResult sr = insert(root.child[i], data);
+					SplitResult sr = insert(root.childrenNodes[i], data);
 					if (sr == null) { // SplitResult can be null here, when it hits a childless node on the next
 										// iteration above which is not full. See the first 'if condition.'
 						return null; // return null in that case
@@ -122,8 +135,8 @@ public class BTree {
 				}
 			}
 			// Subtree rooted with last child i.e (n+1)th child
-			if (i == root.n) {
-				SplitResult sr = insert(root.child[i], data);
+			if (i == root.currentSizeOfNode) {
+				SplitResult sr = insert(root.childrenNodes[i], data);
 				if (sr == null) { // SplitResult can be null here, when it hits a childless node on the next
 					// iteration above which is not full. See the first 'if condition.'
 					return null; // return null in that case
@@ -146,12 +159,12 @@ public class BTree {
 
 	// returns SplitResult which contains centerNode which will be promoted i.e c,
 	// and 2 children that come out of splitting i.e r1,r2
-	private SplitResult splitNode(BTreeNode node, int data, BTreeNode nr1, BTreeNode nr2) {
-		int c = node.keys[node.n / 2];
-		BTreeNode r1 = BTreeNode.newNode();
-		BTreeNode r2 = BTreeNode.newNode();
-		r1.n = node.n / 2;
-		r2.n = node.n - node.n / 2 - 1;
+	private SplitResult splitNode(Node node, int data, Node nr1, Node nr2) {
+		int c = node.dataArray[node.currentSizeOfNode / 2];
+		Node r1 = Node.newNode();
+		Node r2 = Node.newNode();
+		r1.currentSizeOfNode = node.currentSizeOfNode / 2;
+		r2.currentSizeOfNode = node.currentSizeOfNode - node.currentSizeOfNode / 2 - 1;
 		if (!node.isLeaf) {
 			// if the node was not a leaf, the 2 new nodes coming out of splitting will also
 			// definitely not be leaf nodes
@@ -159,18 +172,18 @@ public class BTree {
 			r2.isLeaf = false;
 		}
 		int i = 0;
-		for (; i < node.n / 2; i++) {
-			r1.keys[i] = node.keys[i];
-			r1.child[i] = node.child[i];
+		for (; i < node.currentSizeOfNode / 2; i++) {
+			r1.dataArray[i] = node.dataArray[i];
+			r1.childrenNodes[i] = node.childrenNodes[i];
 		}
-		r1.child[i] = node.child[i];
-		i = node.n / 2 + 1;
+		r1.childrenNodes[i] = node.childrenNodes[i];
+		i = node.currentSizeOfNode / 2 + 1;
 		int j = 0;
-		for (; i < node.n; i++, j++) {
-			r2.keys[j] = node.keys[i];
-			r2.child[j] = node.child[i];
+		for (; i < node.currentSizeOfNode; i++, j++) {
+			r2.dataArray[j] = node.dataArray[i];
+			r2.childrenNodes[j] = node.childrenNodes[i];
 		}
-		r2.child[j] = node.child[i];
+		r2.childrenNodes[j] = node.childrenNodes[i];
 		if (data < c) {
 			r1.insertKey(data, nr1, nr2);
 		} else {
@@ -184,62 +197,63 @@ public class BTree {
 	}
 
 	class SplitResult {
-		BTreeNode r1;
-		BTreeNode r2;
+		Node r1;
+		Node r2;
 		int c;
 	}
 
-	static class BTreeNode {
+	static class Node {
 		// 2) A B-Tree is defined by the term minimum degree ‘t’. The value of t depends
 		// upon disk block size.
-		int n; // Current number of keys
-		int keys[] = new int[2 * T - 1]; // 4) All nodes (including root) may contain at most 2t – 1 keys.
-		BTreeNode[] child = new BTreeNode[2 * T]; // 5) Number of children of a node is equal to the number of keys in
-													// it plus 1. i.e (2t-1)+1=2t
+		int currentSizeOfNode; // Current number of keys in the node. How full is the dataArray.
+		int maxSizeOfNode = 2 * T - 1;
+		int dataArray[] = new int[maxSizeOfNode]; // 4) All nodes (including root) may contain at most 2t – 1 keys.
+		Node[] childrenNodes = new Node[maxSizeOfNode + 1]; // 5) Number of children of a node is equal to the
+															// number of keys in it plus 1. i.e (2t-1)+1=2t
 		boolean isLeaf; // Is true when node is leaf i.e it has no children. Otherwise false
 
 		// 3) Every node except root must contain at least t-1 keys. Root may contain
 		// minimum 1 key.
 
 		// Finally the function that actually inserts data
-		public void insertKey(int data, BTreeNode r1, BTreeNode r2) {
-			int i = n - 1;
-			while (i >= 0 && data < keys[i]) {
-				keys[i + 1] = keys[i];
+		public void insertKey(int incomingData, Node r1, Node r2) {
+			int i = currentSizeOfNode - 1;
+			while (i >= 0 && incomingData < dataArray[i]) {
+				dataArray[i + 1] = dataArray[i];
 				i--;
 			}
-			keys[i + 1] = data;
-			int j = n;
+			dataArray[i + 1] = incomingData;
+			int j = currentSizeOfNode;
 			while (j > i + 1) {
-				child[j + 1] = child[j];
+				childrenNodes[j + 1] = childrenNodes[j];
 				j--;
 			}
-			child[j] = r1;
-			child[j + 1] = r2;
-			n++;
+			childrenNodes[j] = r1;
+			childrenNodes[j + 1] = r2;
+			currentSizeOfNode++;
 		}
 
 		// returns new BTreeNode node initialized with int data that was passed to
 		// create it.
-		public static BTreeNode newNode(int data) {
-			BTreeNode node = new BTreeNode();
-			node.keys[0] = data;
+		public static Node newNode(int data) {
+			Node node = new Node();
+			node.dataArray[0] = data;
 			node.isLeaf = true;
-			node.n = 1;
+			node.currentSizeOfNode = 1;
 			return node;
 		}
 
 		// returns new empty BTreeNode node
-		public static BTreeNode newNode() {
-			BTreeNode node = new BTreeNode();
+		public static Node newNode() {
+			Node node = new Node();
 			node.isLeaf = true;
-			node.n = 0;
+			node.currentSizeOfNode = 0;
 			return node;
 		}
 
 		public boolean isFull() {
 			// returns true if number of current nodes i.e n = 2T-1
-			return 2 * T - 1 == n;
+			return 2 * T - 1 == currentSizeOfNode;
 		}
 	}
 
@@ -262,7 +276,7 @@ public class BTree {
 		bTree.insert(12);
 		bTree.insert(18);
 		bTree.insert(16);
-		bTree.traverse();
+		bTree.traversal();
 		System.out.print(bTree.search(28));
 		System.out.print(bTree.search(11));
 		System.out.print(bTree.search(5));
