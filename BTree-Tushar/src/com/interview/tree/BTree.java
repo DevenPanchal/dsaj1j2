@@ -51,8 +51,8 @@ public class BTree {
 		// local variable 'i' will be used to iterate over the keys.
 		int i = 0;
 
-		
-		// CAN YOU REWRITE THIS WITH FOR LOOP ??????
+		// CAN YOU REWRITE THIS WITH FOR LOOP ?????? Yes we can. call pass in another
+		// argument into traverse function to compare with every element.
 		// while i is less than number of keys, and the key is less than data, move to
 		// next key in the current node and increment 'i'. This i will be used further
 		// down to select the correct child.
@@ -82,7 +82,13 @@ public class BTree {
 			root = Node.newNode(incomingData);
 			return;
 		}
+		// else call a sophisticated insert that always is supposed to return
+		// SplitResult - irrespective of whether there is a split or not.
+
 		SplitResult sr = insert(root, incomingData);
+
+		// if the Splitresult was null, then there was a normal insertion. Else handle
+		// the SplitResult below
 		if (sr != null) {
 			Node newRoot = Node.newNode();
 			// new root's/node's number of keys becomes 1 because sr.c will be its key
@@ -102,14 +108,16 @@ public class BTree {
 			if (!root.isFull()) {
 				// if not full, insert data and return null
 				root.insertKey(data, null, null);
-				return null;
+				return null; // we could insert without any split etc. so return SplitResult as null.
 			} else {
 				// else splitting the node is needed.
 				SplitResult sr = splitNode(root, data, null, null);
 				return sr;
 			}
 		} else {
-			// nodes with children
+			// if it is node with children that is going to get split, then the splitting
+			// will have to handle its children also- in the sense that they will also be
+			// splitly assigned to its new parent.
 			int i = 0;
 			// There are n keys and n+1 children, traverse through n keys
 			// and first n children
@@ -160,30 +168,48 @@ public class BTree {
 	// returns SplitResult which contains centerNode which will be promoted i.e c,
 	// and 2 children that come out of splitting i.e r1,r2
 	private SplitResult splitNode(Node node, int data, Node nr1, Node nr2) {
-		int c = node.dataArray[node.currentSizeOfNode / 2];
+		int c = node.dataArray[node.currentSizeOfNode / 2]; // c becomes the centermost element of the current node
+															// without adding anything.
+
+		// Then 2 new nodes are created
 		Node r1 = Node.newNode();
 		Node r2 = Node.newNode();
-		r1.currentSizeOfNode = node.currentSizeOfNode / 2;
-		r2.currentSizeOfNode = node.currentSizeOfNode - node.currentSizeOfNode / 2 - 1;
+
+		// Initializing current sizes of the new nodes. Note: Max size of node will be
+		// standard depending on 'T'
+		r1.currentSizeOfNode = node.currentSizeOfNode / 2; // half goes here
+		r2.currentSizeOfNode = node.currentSizeOfNode - node.currentSizeOfNode / 2 - 1; // remaining half minus the 1 c
+																						// goes here
 		if (!node.isLeaf) {
 			// if the node was not a leaf, the 2 new nodes coming out of splitting will also
 			// definitely not be leaf nodes
 			r1.isLeaf = false;
 			r2.isLeaf = false;
 		}
+
 		int i = 0;
+
+		// copy over half data and half its child nodes from the current node to r1.
 		for (; i < node.currentSizeOfNode / 2; i++) {
 			r1.dataArray[i] = node.dataArray[i];
 			r1.childrenNodes[i] = node.childrenNodes[i];
 		}
-		r1.childrenNodes[i] = node.childrenNodes[i];
+		r1.childrenNodes[i] = node.childrenNodes[i]; // copy over even the (n+1)th child of the half.
+
+		// now increment i
+		// we will now copy over the remaining half of the data from current node into
+		// r2
 		i = node.currentSizeOfNode / 2 + 1;
 		int j = 0;
 		for (; i < node.currentSizeOfNode; i++, j++) {
 			r2.dataArray[j] = node.dataArray[i];
 			r2.childrenNodes[j] = node.childrenNodes[i];
 		}
-		r2.childrenNodes[j] = node.childrenNodes[i];
+		r2.childrenNodes[j] = node.childrenNodes[i]; // copy over even the (n+1)th child of the half.
+
+		// This was proactive splitting. Hence the data cannot ever become c. The
+		// initial median already became c.
+		// The data will have to go into r1 or r2.
 		if (data < c) {
 			r1.insertKey(data, nr1, nr2);
 		} else {
@@ -207,6 +233,10 @@ public class BTree {
 		// upon disk block size.
 		int currentSizeOfNode; // Current number of keys in the node. How full is the dataArray.
 		int maxSizeOfNode = 2 * T - 1;
+		// maxSizeOfNode = 2*T -1
+		// M= maxSizeOfNode = maxSizeOfNode+1= 2*T-1+1= 2*T
+		// i.e maximum number of child nodes = M
+		// and max number of keys in a node = M-1
 		int dataArray[] = new int[maxSizeOfNode]; // 4) All nodes (including root) may contain at most 2t – 1 keys.
 		Node[] childrenNodes = new Node[maxSizeOfNode + 1]; // 5) Number of children of a node is equal to the
 															// number of keys in it plus 1. i.e (2t-1)+1=2t
@@ -215,7 +245,8 @@ public class BTree {
 		// 3) Every node except root must contain at least t-1 keys. Root may contain
 		// minimum 1 key.
 
-		// Finally the function that actually inserts data
+		// Finally the function that actually inserts data And Handles children Nodes
+		// reconnections
 		public void insertKey(int incomingData, Node r1, Node r2) {
 			int i = currentSizeOfNode - 1;
 			while (i >= 0 && incomingData < dataArray[i]) {
@@ -223,6 +254,7 @@ public class BTree {
 				i--;
 			}
 			dataArray[i + 1] = incomingData;
+
 			int j = currentSizeOfNode;
 			while (j > i + 1) {
 				childrenNodes[j + 1] = childrenNodes[j];
