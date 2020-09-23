@@ -2,6 +2,8 @@ package com.balazsholczer.heap;
 
 public class App {
 
+	// NOTE: This implements Max to Min Heap
+	 
 	public static void main(String[] args) {
 		
 		int[] maxHeap = {210,100,23,2,5};

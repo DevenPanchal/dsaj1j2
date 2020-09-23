@@ -5,9 +5,9 @@ import java.util.Queue;
 
 public class App {
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 
-        // primitive types
+		// primitive types
 //        Queue<String> pQueue = new PriorityQueue<>();
 //
 //        pQueue.add("F");
@@ -20,19 +20,20 @@ public class App {
 //        System.out.println(pQueue.remove());
 //        System.out.println(pQueue.remove());
 
-        // custom objects
-        Queue<Person> queue = new PriorityQueue<>();
-        queue.add(new Person("Balazs", 55));
-        queue.add(new Person("Adam", -1));
-        queue.add(new Person("Joe", 123));
-        queue.add(new Person("Agi", 37));
-        
-        // O(logN)
+		// custom objects
+		Queue<Person> queue = new PriorityQueue<>();
+		queue.add(new Person("Balazs", 55));
+		queue.add(new Person("Adam", -1));
+		queue.add(new Person("Joe", 123));
+		queue.add(new Person("Agi", 37));
 
-        System.out.println(queue.remove());
-        System.out.println(queue.remove());
-        System.out.println(queue.remove());
-        System.out.println(queue.remove());
+		// O(logN)
+// Object will be sorted according to the ordering logic we have Implemented in the compareTo method in the Person class.
 
-    }
+		System.out.println(queue.remove());
+		System.out.println(queue.remove());
+		System.out.println(queue.remove());
+		System.out.println(queue.remove());
+
+	}
 }
