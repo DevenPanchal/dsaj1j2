@@ -4,6 +4,9 @@
 
 Read about Heap Properties, Max Heap, Min Heap from Holczer balazs ppt, watch videos.
 
+Also watch : **Gale Macdowell's Heaps - https://www.youtube.com/watch?v=t0Cq6tVNRBA  **
+and refer to her code for how to resize the Heap
+
 #### Max Heap
 
 #### Min Heap
