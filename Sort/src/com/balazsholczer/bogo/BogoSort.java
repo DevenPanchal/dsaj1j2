@@ -1,4 +1,4 @@
-package com.balazsholczer.sorting;
+package com.balazsholczer.bogo;
 
 public class BogoSort {
 

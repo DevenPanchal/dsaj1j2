@@ -1,4 +1,4 @@
-package com.balazsholczer.sorting;
+package com.balazsholczer.selection;
 
 public class SelectionSort {
 

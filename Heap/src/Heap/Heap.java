@@ -2,7 +2,8 @@ package Heap;
 
 public class Heap {
 
-	// we implement the heap data structure with an array
+	// we implement the heap data structure with an array. It is a class level
+	// variable so that the swap function can also see and alter the same heap.
 	private int[] heap;
 
 	// we want to track the size of the heap.
@@ -54,15 +55,12 @@ public class Heap {
 
 	}
 
-	// this method only gets the root. Does not delete it.
-	public int getMax() {
-		return this.heap[0];
-	}
+	
 
 	// Poll or delete root
 	// Takes O(1) + (O(logN) time because of the fixDown method) = O(logN) time.
 	public int poll() {
-		int max = getMax();
+		int max = this.heap[0];
 		// swap root element and the last element
 		swap(0, heapSize - 1);
 		this.heapSize--;

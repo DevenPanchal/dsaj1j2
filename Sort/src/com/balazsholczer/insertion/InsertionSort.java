@@ -1,5 +1,6 @@
-package com.balazsholczer.sorting;
+package com.balazsholczer.insertion;
 
+// Ascending sort implementation
 public class InsertionSort {
 
 	public static void main(String[] args) {
@@ -12,7 +13,7 @@ public class InsertionSort {
 
             while ((j > 0) && (nums[j - 1] > nums[j])) {
                 swap(nums, j, j - 1);
-                --j;
+                j--;
             }
         }
 
