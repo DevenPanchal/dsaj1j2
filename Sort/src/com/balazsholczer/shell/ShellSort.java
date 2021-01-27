@@ -2,34 +2,38 @@ package com.balazsholczer.shell;
 
 public class ShellSort {
 
-    private int[] array;
+	private int[] array;
 
-    public ShellSort(int[] array) {
-        this.array = array;
-    }
+	public ShellSort(int[] array) {
+		this.array = array;
+	}
 
-    public void shellSort() {
+	public ShellSort() {
+		// TODO Auto-generated constructor stub
+	}
 
-        for (int gap = array.length / 2; gap > 0; gap /= 2) {
+	public void shellSort() {
 
-            for (int i = gap; i < array.length; i++) {
+		for (int gap = array.length / 2; gap > 0; gap = gap / 2) {
 
-                int val = array[i];
-                int j = i;
+			for (int i = gap; i < array.length; i++) {
 
-                while ((j >= gap) && (array[j - gap] > val)) {
-                    array[j] = array[j - gap];
-                    j = j - gap;
-                }
+				int val = array[i];
+				int j = i;
 
-                array[j] = val;
-            }
-        }
-    }
+				while ((j >= gap) && (array[j - gap] > val)) {
+					array[j] = array[j - gap];
+					j = j - gap;
+				}
 
-    public void showArray() {
-        for (int i = 0; i < array.length; ++i) {
-            System.out.print(array[i] + " ");
-        }
-    }
+				array[j] = val;
+			}
+		}
+	}
+
+	public void showArray() {
+		for (int i = 0; i < array.length; ++i) {
+			System.out.print(array[i] + " ");
+		}
+	}
 }

@@ -7,12 +7,15 @@ public class InsertionSort {
 
         int[] nums = { -4,-66,0,4,2,2,1, 55, 66 };
 
+     // for loop for element in question. Element in question starts at 2nd element
         for (int i = 0; i < nums.length; ++i) {
 
             int j = i;
 
             while ((j > 0) && (nums[j - 1] > nums[j])) {
+            	// swap
                 swap(nums, j, j - 1);
+                //decrement j to check further
                 j--;
             }
         }

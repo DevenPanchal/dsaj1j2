@@ -8,5 +8,7 @@ public class App {
         Quicksort quicksort = new Quicksort(nums);
         quicksort.sort();
         quicksort.showArray();
+        
+        
     }
 }
