@@ -7,8 +7,16 @@
 2. Duplicates sorted in order of appearance in input list? -
 3. Runtime complexity -
 
+
 ## Comparison Based Sorting Algorithms
 
+### Adaptive and Non-Adaptive Sorting Algorithms
+Comparison based sorting algorithms generally cannot do better than O(NlogN)
+But if there are some presorted subsequences, we can take advantage and do close to O(N)
+
+Heap Sort and Merge Sort do not take advantage of these presorted subsequences and hence are Non Adaptive.
+
+But Insertion Sort and Shell sort are Adaptive algorithms that take advantage of presorted subsequences situation.
 
 Bubble Sort
 -----------
@@ -32,11 +40,11 @@ Algo in words:
 
 Insertion sort  
 --------------
-Worst case = Outer loop = n, every Inner loop = n  -> Complexity = n^2
-Avg case = Outer loop = n , every Inner loop = let's say n/2 -> Complexity = n^2/2 = n^2
-Best case = Outer loop = n, every Inner loop = 1 -> Complexity = n
+Worst case = Outer loop = n, every Inner loop = n  -> Complexity = O(n^2)
+Avg case = Outer loop = n , every Inner loop = let's say n/2 -> Complexity = n^2/2 = O(n^2)
+Best case = Outer loop = n, every Inner loop = 1 -> Complexity = O(n)
 
-Memory complexity = n
+Memory complexity = O(n)
 
 In place, stable
 
@@ -136,13 +144,19 @@ Merge Sort + Insertion Sort = TimSort
 Counting Sort
 --------------
 (See Balazs video - great info)
-O (N+k)
+O (N+k)  --> Linear :)
 Out of Place
 
-Good when the variation in min and max values is less than  the number of values. i.e k is less than N.
+Disadvantage: Only good when the variation in min and max values is less than  the number of values. i.e k is less than N.
 
 
 
 
 Radix Sort
 ----------
+O(N) in avg case. Watch Holczer and Rob Edwards SDSU.
+
+
+Sort Summary
+------------
+<img src="Sort-Summary.PNG" alt="drawing" width="500" rotate="90"/>
